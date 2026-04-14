@@ -1,0 +1,62 @@
+---
+title: "Interpretable Retail Demand Modeling"
+format:
+  html:
+    toc: true
+    number-sections: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Overview
+
+This notebook turns a course-originated grocery-sales analysis into a portfolio-style project.
+The goal is not to re-submit coursework structure, but to evaluate how **model family, heterogeneity controls, and validation design** affect future-week forecasting conclusions.
+
+## Project question
+
+> When predicting overdispersed weekly grocery demand, are the main gains coming from count-model choice, from heterogeneity controls, or from better validation design?
+
+## Setup
+
+```{r}
+source("../src/05_run_model_comparison.R")
+```
+
+## Load saved outputs
+
+```{r}
+model_summary <- readr::read_csv("../results/stage2_model_summary.csv", show_col_types = FALSE)
+coef_stability <- readr::read_csv("../results/stage2_coef_stability.csv", show_col_types = FALSE)
+nb_checks <- readr::read_csv("../results/stage2_nb_checks.csv", show_col_types = FALSE)
+model_summary
+```
+
+## Key result
+
+The strongest result is that adding `UPC` and `STORE_NUM` fixed effects materially improves time-aware forecasting performance, while DISPLAY interactions add only marginal extra value.
+
+```{r}
+coef_stability
+```
+
+## Negative binomial robustness check
+
+```{r}
+nb_checks
+```
+
+## Interpretation
+
+The portfolio version supports three claims:
+
+1. Overdispersion is real, so count-based modelling is sensible.
+2. Product/store heterogeneity matters more than small interaction extensions.
+3. Future-week validation changes which modelling choices matter most.
+
+## Caution
+
+This is a **predictive** project, not a causal one.  
+Price and promotion coefficients should be read as conditional associations under observed store–product–week variation.
